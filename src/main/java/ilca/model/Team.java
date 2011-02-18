@@ -36,7 +36,7 @@
 package ilca.model;
 
 /**
- * Simple representation of an association football team.
+ * Simple representation of an association football team. Immutable object.
  * @author ilcavero
  *
  */

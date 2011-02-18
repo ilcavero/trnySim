@@ -36,15 +36,16 @@
 import ilca.engine.MatchEngine;
 import ilca.engine.ResultTally;
 import ilca.model.Team;
-import ilca.model.tournaments.LeagueTournament;
+import ilca.tournaments.LeagueTournament;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * This is a demo class of how to set up a simulation.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public class TrnySim {
 
@@ -58,7 +59,7 @@ public class TrnySim {
 				Team t = new Team("T" + i, (int) (1500 + r.nextDouble() * 1000));
 				teams.add(t);
 			}
-			LeagueTournament tournament = new LeagueTournament(teams, 2);
+			LeagueTournament tournament = new LeagueTournament(teams, 2 * (teams.size() - 1));
 			ResultTally tally = sim.simulateTournament(tournament, 10000);
 
 			System.out.println("Rank difference mean:" + tally.getRankDifferenceMean());

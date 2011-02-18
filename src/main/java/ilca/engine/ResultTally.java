@@ -36,7 +36,7 @@
 package ilca.engine;
 
 import ilca.model.Team;
-import ilca.model.tournaments.TournamentState;
+import ilca.tournaments.TournamentState;
 
 import java.util.ArrayList;
 import java.util.Collections;

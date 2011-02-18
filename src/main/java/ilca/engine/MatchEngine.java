@@ -37,8 +37,8 @@ package ilca.engine;
 
 import ilca.model.Match;
 import ilca.model.Team;
-import ilca.model.tournaments.Tournament;
-import ilca.model.tournaments.TournamentState;
+import ilca.tournaments.Tournament;
+import ilca.tournaments.TournamentState;
 
 import java.util.Hashtable;
 import java.util.Map;

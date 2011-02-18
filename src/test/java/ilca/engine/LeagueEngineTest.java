@@ -36,7 +36,7 @@
 package ilca.engine;
 
 import ilca.model.Team;
-import ilca.model.tournaments.LeagueTournament;
+import ilca.tournaments.LeagueTournament;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class LeagueEngineTest {
 			Team t = new Team("T" + i, (int) (1500 + r.nextDouble() * 1000));
 			teams.add(t);
 		}
-		LeagueTournament tournament = new LeagueTournament(teams, 2);
+		LeagueTournament tournament = new LeagueTournament(teams, 38);
 		MatchEngine sim = new MatchEngine(10);
 		ResultTally tally = sim.simulateTournament(tournament, 0);
 		Assert.assertEquals(Double.NaN, tally.getPercentageOfCorrectRank(), 0.01d);

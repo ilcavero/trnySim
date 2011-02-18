@@ -38,8 +38,8 @@ package ilca.math;
 import ilca.engine.ResultTally;
 import ilca.model.Match;
 import ilca.model.Team;
-import ilca.model.tournaments.Tournament;
-import ilca.model.tournaments.TournamentState;
+import ilca.tournaments.Tournament;
+import ilca.tournaments.TournamentState;
 
 import java.util.ArrayList;
 import java.util.List;

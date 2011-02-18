@@ -36,7 +36,8 @@
 package ilca.model;
 
 /**
- * Simple representation of an association football match.
+ * Simple representation of an association football match. Two-state immutable object
+ * initially as a not-played match, and after result as a played match.
  * @author ilcavero
  *
  */
