@@ -56,14 +56,12 @@ abstract class GroupTournament implements Tournament {
 		if (teams == null || teams.isEmpty())
 			throw new IllegalArgumentException("No teams were added to the tournament");
 		this.numberOfRounds = numberOfRounds;
-		this.teams = new ArrayList<Team>();
-		this.teams.addAll(teams);
+		this.teams = new ArrayList<Team>(teams);
 	}
 
 	@Override
 	public List<Team> getTeams() {
-		ArrayList<Team> dest = new ArrayList<Team>();
-		dest.addAll(teams);
+		ArrayList<Team> dest = new ArrayList<Team>(teams);
 		return dest;
 	}
 

@@ -36,7 +36,6 @@
 package ilca.tournaments;
 
 import ilca.model.Match;
-import ilca.model.Team;
 
 /**
  * Implementation of match that will update corresponding teamItems of the group
@@ -47,17 +46,18 @@ import ilca.model.Team;
 class GroupTournamentMatch extends Match {
 
 	private final GroupTournamentState groupTournamentState;
+	private TeamItem home, visit;
 
-	GroupTournamentMatch(GroupTournamentState groupTournamentState, Team home, Team visit) {
-		super(home, visit);
+	GroupTournamentMatch(GroupTournamentState groupTournamentState, TeamItem home, TeamItem visit) {
+		super(home.getTeam(), visit.getTeam());
 		this.groupTournamentState = groupTournamentState;
+		this.home = home;
+		this.visit = visit;
 	}
 
 	@Override
 	public void setResult(int goalsHome, int goalsVisit, int homeRating, int visitRating) {
 		super.setResult(goalsHome, goalsVisit, homeRating, visitRating);
-		TeamItem home = this.groupTournamentState.getTeamItemForTeam(getHome());
-		TeamItem visit = this.groupTournamentState.getTeamItemForTeam(getVisit());
 		home.addResult(this);
 		visit.addResult(this);
 		this.groupTournamentState.unplayedMatches.remove(this);

@@ -35,8 +35,7 @@
  ******************************************************************************/
 package ilca.tournaments;
 
-import ilca.model.Team;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ public class LeagueTournamentState extends GroupTournamentState {
 		if (!matches.isEmpty())
 			return;
 		int pivot = 0;
-		List<Team> teams = getTournament().getTeams();
+		List<TeamItem> teams = new ArrayList<TeamItem>(teamItems);
 		int size = teams.size();
 		int numberOfMatchdays = this.getTournament().getNumberOfRounds() ;
 		if (size % 2 != 0) {
@@ -67,13 +66,13 @@ public class LeagueTournamentState extends GroupTournamentState {
 		}
 		for (int matchday = 0; matchday < numberOfMatchdays; matchday++) {
 			for (int i = 0; i < size / 2; i++) {
-				Team home = teams.get(i);
-				Team visit = teams.get(size - 1 - i);
+				TeamItem home = teams.get(i);
+				TeamItem visit = teams.get(size - 1 - i);
 				if (home == null || visit == null) {
 					continue;
 				}
 				if (matchday % 2 != 0) {
-					Team temp = home;
+					TeamItem temp = home;
 					home = visit;
 					visit = temp;
 				}
@@ -85,9 +84,9 @@ public class LeagueTournamentState extends GroupTournamentState {
 		}
 	}
 
-	private void rotateList(List<Team> list, int pivot) {
-		Team temp = list.remove(pivot);
-		Team last = list.remove(list.size() - 1);
+	private void rotateList(List<TeamItem> list, int pivot) {
+		TeamItem temp = list.remove(pivot);
+		TeamItem last = list.remove(list.size() - 1);
 		list.add(0, last);
 		list.add(pivot, temp);
 	}

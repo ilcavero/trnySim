@@ -53,11 +53,10 @@ public class ResultTally {
 	private List<ResultTally.ResultDataPoint> tally = new ArrayList<ResultTally.ResultDataPoint>();
 
 	public void addTournamentResult(TournamentState resultTournament) {
-		if (resultTournament.isFinished() == false)
-			throw new IllegalArgumentException("Cannot tally unfinished tournaments");
+		if (resultTournament == null || resultTournament.isFinished() == false)
+			throw new IllegalArgumentException("Cannot tally null or unfinished tournaments");
 		List<Team> result = resultTournament.getRankedTeams();
-		ArrayList<Team> sortedCopy = new ArrayList<Team>();
-		sortedCopy.addAll(result);
+		ArrayList<Team> sortedCopy = new ArrayList<Team>(result);
 		Collections.sort(sortedCopy, new Comparator<Team>() {
 
 			@Override
@@ -78,6 +77,10 @@ public class ResultTally {
 			p.deserved = i;
 			tally.add(p);
 		}
+	}
+	
+	public void addTally(ResultTally otherTally) {
+		tally.addAll(otherTally.tally);
 	}
 
 	public double getRankDifferenceStandardDeviation() {
@@ -101,6 +104,8 @@ public class ResultTally {
 	}
 
 	public double getRankDifferenceStandardDeviationForPosition(int deservedPosition) {
+		if(deservedPosition < 1)
+			throw new IllegalArgumentException("deserved positions should be positive integers");
 		double mean = getRankDifferenceMeanForPosition(deservedPosition);
 		double sum = 0;
 		long count = 0;
@@ -116,6 +121,8 @@ public class ResultTally {
 	}
 
 	public double getRankDifferenceMeanForPosition(int deservedPosition) {
+		if(deservedPosition < 1)
+			throw new IllegalArgumentException("deserved positions should be positive integers");
 		long sum = 0, count = 0;
 		for (ResultDataPoint dataPoint : tally) {
 			if (dataPoint.deserved == deservedPosition) {
@@ -136,6 +143,8 @@ public class ResultTally {
 	}
 
 	public double getPercentageOfCorrectRankForPosition(int deservedPosition) {
+		if(deservedPosition < 0)
+			throw new IllegalArgumentException("deserved positions should be positive integers or zero");
 		long count = 0, total = 0;
 		for (ResultDataPoint dataPoint : tally) {
 			if (deservedPosition == dataPoint.actual && deservedPosition == dataPoint.deserved)
@@ -145,8 +154,8 @@ public class ResultTally {
 		}
 		return count / (double) total;
 	}
-
-	private class ResultDataPoint {
+	
+	private static class ResultDataPoint {
 		int deserved;
 		int actual;
 	}

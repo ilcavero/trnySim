@@ -57,10 +57,21 @@ public class LeagueEngineTest {
 		}
 		LeagueTournament tournament = new LeagueTournament(teams, 38);
 		MatchEngine sim = new MatchEngine(10);
-		ResultTally tally = sim.simulateTournament(tournament, 0);
-		Assert.assertEquals(Double.NaN, tally.getPercentageOfCorrectRank(), 0.01d);
-		tally = sim.simulateTournament(tournament, 100);
+		ResultTally tally = sim.simulateTournament(tournament, 100);
 		Assert.assertEquals(0.33, tally.getPercentageOfCorrectRank(), 0.1d);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void simulateBadParameters() {
+		Random r = new Random(999);
+		List<Team> teams = new ArrayList<Team>();
+		for (int i = 0; i < 20; i++) {
+			Team t = new Team("T" + i, (int) (1500 + r.nextDouble() * 1000));
+			teams.add(t);
+		}
+		LeagueTournament tournament = new LeagueTournament(teams, 38);
+		MatchEngine sim = new MatchEngine(10);
+		sim.simulateTournament(tournament, 0);
 	}
 
 }

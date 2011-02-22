@@ -105,6 +105,8 @@ public class Match {
 	public void setResult(int goalsHome, int goalsVisit, int homeRating, int visitRating) {
 		if (isPlayed())
 			throw new IllegalStateException();
+		if(goalsHome < 0 || goalsVisit < 0)
+			throw new IllegalArgumentException("negative amount of goals");
 		this.goalsHome = goalsHome;
 		this.goalsVisit = goalsVisit;
 		this.homeRating = homeRating;

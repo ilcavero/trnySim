@@ -36,7 +36,6 @@
 package ilca.tournaments;
 
 import ilca.model.Match;
-import ilca.model.Team;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -145,15 +144,12 @@ public class SwissTournamentState extends GroupTournamentState implements Tourna
 	}
 
 	private void createMatch(TeamItem teamA, TeamItem teamB) {
-		Team homeTeam, awayTeam;
+		Match match;
 		if(teamA.getHomeMatchCount() <= teamB.getHomeMatchCount()) {
-			homeTeam = teamA.getTeam();
-			awayTeam = teamB.getTeam();
+			match = new GroupTournamentMatch(this, teamA, teamB);
 		} else {
-			awayTeam = teamA.getTeam();
-			homeTeam = teamB.getTeam();
+			match = new GroupTournamentMatch(this, teamB, teamA);
 		}
-		Match match = new GroupTournamentMatch(this, homeTeam, awayTeam);
 		matches.add(match);
 		unplayedMatches.add(match);
 	}

@@ -49,10 +49,14 @@ class TeamPerformance {
 	private IntegerSequence performanceGenerator;
 
 	public TeamPerformance(IntegerSequence performanceGenerator) {
+		if(performanceGenerator == null)
+			throw new IllegalArgumentException("performanceGenerator is null");
 		this.performanceGenerator = performanceGenerator;
 	}
 
 	public TeamPerformance(Team team, long seed) {
+		if(team == null)
+			throw new IllegalArgumentException("team is null");
 		this.performanceGenerator = new NormalRandomSequence(seed, team.getRating(), DEFAULT_PERFORMANCE_DEVIATION);
 	}
 

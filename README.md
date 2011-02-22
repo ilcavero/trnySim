@@ -7,12 +7,11 @@ formats through simulation. Although still in development, trnySim is able to
 analyze the fairness of the results of a tournament in terms of the position 
 achieved by a team against the expected position according to a team's rating. 
 It is intended that once finished, this program will allow users to analyze 
-their ideas for tournament designs. Currently football (soccer) type league 
-tournament simulators are implemented, and football Swiss tournament are 
-almost done; the next steps will be knock-out and composite tournaments 
-(multi-phase tournaments, i.e. top 4 classify to a play-off). Although not 
-its main purpose, this program can be used as a library to create a generator 
-of tournament schedules.
+their ideas for tournament designs. Currently football (soccer) type league and
+swiss style tournament simulators are implemented; the next steps will be 
+knock-out and composite tournaments (multi-phase tournaments, i.e. top 4 
+classify to a play-off). Although not its main purpose, this program can be 
+used as a library to create a generator of tournament schedules.
 
 Installation & Usage
 --------------------

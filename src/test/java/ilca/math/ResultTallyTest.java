@@ -64,8 +64,7 @@ public class ResultTallyTest {
 		}
 		tally = new ResultTally();
 		for (int i = 0; i < numberOfResults; i++) {
-			final List<Team> temp = new ArrayList<Team>();
-			temp.addAll(teams);
+			final List<Team> temp = new ArrayList<Team>(teams);
 			for (int j = 0; j < temp.size() - 1; j = j + 2) {
 				Team tempTeam = temp.get(j);
 				temp.set(j, temp.get(j + 1));

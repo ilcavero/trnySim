@@ -41,14 +41,13 @@ import ilca.model.Team;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Abstract class for the state of league-like tournaments.
+ * 
  * @author ilcavero
- *
+ * 
  */
 abstract class GroupTournamentState implements TournamentState {
 
@@ -56,7 +55,6 @@ abstract class GroupTournamentState implements TournamentState {
 	List<TeamItem> teamItems = new ArrayList<TeamItem>();
 	List<Match> matches = new ArrayList<Match>();
 	List<Match> unplayedMatches = new ArrayList<Match>();
-	private Map<String, TeamItem> teamNameToTeamItems = new HashMap<String, TeamItem>();
 
 	@Override
 	public Tournament getTournament() {
@@ -82,7 +80,6 @@ abstract class GroupTournamentState implements TournamentState {
 		return resultTeam;
 	}
 
-	
 	@Override
 	public Match getNextMatch() {
 		if (unplayedMatches.isEmpty()) {
@@ -93,8 +90,7 @@ abstract class GroupTournamentState implements TournamentState {
 
 	@Override
 	public List<Match> getKnownMatches() {
-		ArrayList<Match> m = new ArrayList<Match>();
-		m.addAll(matches);
+		ArrayList<Match> m = new ArrayList<Match>(matches);
 		return m;
 	}
 
@@ -115,26 +111,24 @@ abstract class GroupTournamentState implements TournamentState {
 		}
 		sb.append("Matches:\n");
 		for (Match m : matches) {
-			sb.append(m.getHome().getName() + " " + m.getGoalsHome() + " : " + m.getVisit().getName() + " " + m.getGoalsVisit() + "\n");
+			sb.append(m.getHome().getName() + " " + m.getGoalsHome() + " : " + m.getVisit().getName() + " "
+					+ m.getGoalsVisit() + "\n");
 		}
 		return sb.toString();
 	}
-	
+
 	void initialize(GroupTournament tournament) {
 		this.tournament = tournament;
 		for (Team team : tournament.getTeams()) {
 			TeamItem ti = new TeamItem();
 			ti.setTeam(team);
 			teamItems.add(ti);
-			teamNameToTeamItems.put(team.getName(), ti);
 		}
 	}
-	
+
 	List<TeamItem> getSortedTeamItems() {
-		List<TeamItem> sortedTeamItems = new ArrayList<TeamItem>(teamItems.size());
-		sortedTeamItems.addAll(teamItems);
-		Collections.sort(sortedTeamItems, new Comparator<TeamItem>() {
-			
+		Collections.sort(teamItems, new Comparator<TeamItem>() {
+
 			@Override
 			public int compare(TeamItem o1, TeamItem o2) {
 				if (o1.getPoints() > o2.getPoints())
@@ -151,14 +145,11 @@ abstract class GroupTournamentState implements TournamentState {
 					return 1;
 				return 0;
 			}
-			
+
 		});
-		return sortedTeamItems;
+		List<TeamItem> sortedTeamItemsCopy = new ArrayList<TeamItem>(teamItems);
+		return sortedTeamItemsCopy;
 	}
 
 	abstract void generateMatches();
-
-	TeamItem getTeamItemForTeam(Team team) {
-		return teamNameToTeamItems.get(team.getName());
-	}
 }

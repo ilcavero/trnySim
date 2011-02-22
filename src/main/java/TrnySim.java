@@ -37,6 +37,7 @@ import ilca.engine.MatchEngine;
 import ilca.engine.ResultTally;
 import ilca.model.Team;
 import ilca.tournaments.LeagueTournament;
+import ilca.tournaments.SwissTournament;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -48,27 +49,37 @@ import java.util.Random;
  * 
  */
 public class TrnySim {
+	static final int TOURNAMENT_SIZE = 20, NUMBER_OF_MATCHES = 25, ANALYSIS_REPETITIONS = 50, RUN_REPETITIONS = 200;
 
 	public static void main(String[] args) {
-		for (int j = 1; j < 2; j++) {
-			long nanoTime = System.nanoTime();
+		ResultTally tally = new ResultTally();
+		ResultTally tally2 = new ResultTally();
+		long nanoTime = System.nanoTime();
+		for (int j = 1; j < ANALYSIS_REPETITIONS; j++) {
 			ArrayList<Team> teams = new ArrayList<Team>();
 			MatchEngine sim = new MatchEngine(j * 37);
 			Random r = new Random(j * 11);
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < TOURNAMENT_SIZE; i++) {
 				Team t = new Team("T" + i, (int) (1500 + r.nextDouble() * 1000));
 				teams.add(t);
 			}
-			LeagueTournament tournament = new LeagueTournament(teams, 2 * (teams.size() - 1));
-			ResultTally tally = sim.simulateTournament(tournament, 10000);
-
-			System.out.println("Rank difference mean:" + tally.getRankDifferenceMean());
-			System.out.println("Rank difference deviation:" + tally.getRankDifferenceStandardDeviation());
-			System.out.println("percentage of correct rank:" + tally.getPercentageOfCorrectRank());
-			System.out.println("percentage of correct first rank:" + tally.getPercentageOfCorrectRankForPosition(0));
-			System.out.println("percentage of correct tenth rank:" + tally.getPercentageOfCorrectRankForPosition(9));
-			System.out.println(System.nanoTime() - nanoTime + "***************");
+			LeagueTournament tournament = new LeagueTournament(teams, NUMBER_OF_MATCHES);
+			tally.addTally(sim.simulateTournament(tournament, RUN_REPETITIONS));
+			SwissTournament swissTrny = new SwissTournament(teams, NUMBER_OF_MATCHES);
+			tally2.addTally(sim.simulateTournament(swissTrny, RUN_REPETITIONS));
 		}
+
+		System.out.println("Rank difference mean: League:" + tally.getRankDifferenceMean() + " Swiss:"
+				+ tally2.getRankDifferenceMean());
+		System.out.println("Rank difference deviation: League:" + tally.getRankDifferenceStandardDeviation()
+				+ " Swiss:" + tally2.getRankDifferenceStandardDeviation());
+		System.out.println("percentage of correct rank: League:" + tally.getPercentageOfCorrectRank() + " Swiss:"
+				+ tally2.getPercentageOfCorrectRank());
+		System.out.println("percentage of correct first rank: League:" + tally.getPercentageOfCorrectRankForPosition(0)
+				+ " Swiss:" + tally2.getPercentageOfCorrectRankForPosition(0));
+		System.out.println("percentage of correct tenth rank: League:" + tally.getPercentageOfCorrectRankForPosition(9)
+				+ " Swiss:" + tally2.getPercentageOfCorrectRankForPosition(9));
+		System.out.println((System.nanoTime() - nanoTime) / 1000000 + "ms");
 	}
 
 }

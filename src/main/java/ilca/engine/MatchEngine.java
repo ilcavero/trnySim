@@ -79,6 +79,8 @@ public class MatchEngine {
 	public ResultTally simulateTournament(Tournament tournament, int repetitions) {
 		if (tournament == null)
 			throw new IllegalArgumentException("tournament cannot be null");
+		if (repetitions < 1)
+			throw new IllegalArgumentException("repetitions should be positive integers");
 		ResultTally tally = new ResultTally();
 		for (int i = 0; i < repetitions; i++) {
 			TournamentState instance = tournament.startTournamentInstance();
