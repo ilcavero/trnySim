@@ -37,8 +37,9 @@ package ilca.model;
 
 /**
  * Simple representation of an association football team. Immutable object.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public final class Team {
 	private String name;
@@ -68,5 +69,10 @@ public final class Team {
 			return name.equals(((Team) o).name);
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

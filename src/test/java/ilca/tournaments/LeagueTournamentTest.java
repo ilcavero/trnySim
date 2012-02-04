@@ -53,7 +53,7 @@ import org.junit.Test;
 public class LeagueTournamentTest {
 
 	@Test
-	public void countGeneratedMatches() {
+	public void testCountGeneratedMatches() {
 		List<Team> teams = Utils.createTeamList(10);
 		TournamentState league = new LeagueTournament(teams, 18).startTournamentInstance();
 		Match m;
@@ -66,7 +66,7 @@ public class LeagueTournamentTest {
 	}
 
 	@Test
-	public void uniqueMatches() {
+	public void testUniqueMatches() {
 		final int size = 15;
 		final int numberOfRounds = 3 * (size - 1);
 		HashMap<Team, Integer> counter = new HashMap<Team, Integer>();
@@ -86,9 +86,9 @@ public class LeagueTournamentTest {
 			Assert.assertEquals(numberOfRounds, count.intValue());
 		}
 	}
-	
+
 	@Test
-	public void uniqueMatchesInInterruptedLeague() {
+	public void testUniqueMatchesInInterruptedLeague() {
 		final int size = 15;
 		final int numberOfRounds = 20;
 		HashMap<Team, Integer> counter = new HashMap<Team, Integer>();
@@ -107,9 +107,9 @@ public class LeagueTournamentTest {
 		int countWith19 = 0;
 		for (Iterator<Integer> iterator = counter.values().iterator(); iterator.hasNext();) {
 			Integer count = iterator.next();
-			if(count == 20)
+			if (count == 20)
 				countWith20++;
-			else if(count == 19)
+			else if (count == 19)
 				countWith19++;
 			else
 				Assert.fail("Found team with " + count.intValue() + " matches");
@@ -119,7 +119,7 @@ public class LeagueTournamentTest {
 	}
 
 	@Test
-	public void leagueRanking() throws Exception {
+	public void testLeagueRanking() throws Exception {
 		List<Team> teams = Utils.createTeamList(6);
 		TournamentState league = new LeagueTournament(teams, 10).startTournamentInstance();
 		Match m;
@@ -138,7 +138,7 @@ public class LeagueTournamentTest {
 	}
 
 	@Test
-	public void tieRanking() {
+	public void testTieBreaking() {
 		Tournament league = new LeagueTournament(Utils.createTeamList(4), 3);
 		TournamentState state = league.startTournamentInstance();
 		state.getNextMatch().setResult(2, 0, 0, 0);// 1-4
@@ -155,17 +155,17 @@ public class LeagueTournamentTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void empyTournament() {
+	public void testEmpyTournament() {
 		new LeagueTournament(new ArrayList<Team>(), 4);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void noMatchdaysTournament() {
+	public void testNoMatchdaysTournament() {
 		new LeagueTournament(Utils.createTeamList(5), 0);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void canOnlySetResultOnce() {
+	public void testCanOnlySetResultOnce() {
 		TournamentState trny = new LeagueTournament(Utils.createTeamList(5), 4).startTournamentInstance();
 		Match match = trny.getNextMatch();
 		match.setResult(0, 1, 0, 0);
@@ -173,7 +173,7 @@ public class LeagueTournamentTest {
 	}
 
 	@Test
-	public void getKnownMatches() {
+	public void testGetKnownMatches() {
 		final int size = 5;
 		TournamentState trny = new LeagueTournament(Utils.createTeamList(size), 4).startTournamentInstance();
 		List<Match> knownMatches = trny.getKnownMatches();
@@ -181,14 +181,14 @@ public class LeagueTournamentTest {
 	}
 
 	@Test
-	public void reset() {
-		TournamentState trny = new LeagueTournament(Utils.createTeamList(5), 4).startTournamentInstance();
-		Match nextMatch;
-		while ((nextMatch = trny.getNextMatch()) != null) {
-			nextMatch.setResult(1, 0, 0, 0);
-		}
+	public void testIsFinished() {
+		TournamentState trny = new LeagueTournament(Utils.createTeamList(3), 2).startTournamentInstance();
+		Assert.assertFalse(trny.isFinished());
+		trny.getNextMatch().setResult(1, 0, 0, 0);
+		Assert.assertFalse(trny.isFinished());
+		trny.getNextMatch().setResult(1, 0, 0, 0);
+		Assert.assertFalse(trny.isFinished());
+		trny.getNextMatch().setResult(1, 0, 0, 0);
 		Assert.assertTrue(trny.isFinished());
-		trny.reset();
-		Assert.assertTrue("Tournament was not reset properly", !trny.isFinished());
 	}
 }

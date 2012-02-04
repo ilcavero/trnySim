@@ -42,8 +42,9 @@ import java.util.List;
 
 /**
  * Abstract class for league-like tournaments that maintain a standing of teams.
+ * 
  * @author ilcavero
- *
+ * 
  */
 abstract class GroupTournament implements Tournament {
 

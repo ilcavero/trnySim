@@ -43,17 +43,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of swiss tournament state. Games will be generated
- * lazily in as big as possible batches on each call to getNextMatch().
+ * Implementation of swiss tournament state. Games will be generated after the
+ * end of each tournament round.
+ * 
  * @author ilcavero
- *
+ * 
  */
-public class SwissTournamentState extends GroupTournamentState implements TournamentState {
-	private boolean finished = false;
-	private Map<TeamItem, Map<TeamItem, Integer>> matchUpMatrix = new HashMap<TeamItem, Map<TeamItem,Integer>>();
-	
+final class SwissTournamentState extends GroupTournamentState implements TournamentState {
+	private boolean noMoreNewGames = false;
+	private Map<TeamItem, Map<TeamItem, Integer>> matchUpMatrix = new HashMap<TeamItem, Map<TeamItem, Integer>>();
+
 	SwissTournamentState(GroupTournament tournament) {
-		initialize(tournament);
+		super(tournament);
 		for (TeamItem ti : teamItems) {
 			matchUpMatrix.put(ti, new HashMap<TeamItem, Integer>());
 		}
@@ -65,30 +66,31 @@ public class SwissTournamentState extends GroupTournamentState implements Tourna
 		generateMatches();
 		return super.getNextMatch();
 	}
-	
+
 	@Override
 	public boolean isFinished() {
-		return finished;
+		generateMatches();
+		return noMoreNewGames && unplayedMatches.isEmpty();
 	}
 
 	@Override
 	void generateMatches() {
-		if (finished || !unplayedMatches.isEmpty())
+		if (noMoreNewGames || !unplayedMatches.isEmpty())
 			return;
 		List<TeamItem> sortedTeams = getSortedTeamItems();
 		List<TeamItem> teamsToMatch = getTeamsToMatch(sortedTeams);
 		int unmatchedTeamsCounter = 0;
-		int maxEncounters = 1 + (teamsToMatch.isEmpty() ? 0 : teamsToMatch.get(0).getMatchCount()) / (sortedTeams.size() - 1);
-		nextTeam:
-		while(teamsToMatch.size() > unmatchedTeamsCounter) {
+		int maxEncounters = 1 + (teamsToMatch.isEmpty() ? 0 : teamsToMatch.get(0).getMatchCount())
+				/ (sortedTeams.size() - 1);
+		nextTeam: while (teamsToMatch.size() > unmatchedTeamsCounter) {
 			TeamItem currentTeam = teamsToMatch.get(unmatchedTeamsCounter);
 			int startingPosition = sortedTeams.indexOf(currentTeam);
 			int sign = 1;
 			int i = 1;
 			int maxValue = Math.max(sortedTeams.size() - startingPosition, startingPosition + 1);
-			while(i < maxValue) {
+			while (i < maxValue) {
 				int position = startingPosition + i * sign;
-				if(0 <= position && position < sortedTeams.size()) {
+				if (0 <= position && position < sortedTeams.size()) {
 					TeamItem matchedTeam = sortedTeams.get(position);
 					int count = getMatchUpCount(currentTeam, matchedTeam);
 					if (count < maxEncounters && matchedTeam.getMatchCount() < tournament.getNumberOfRounds()) {
@@ -102,32 +104,32 @@ public class SwissTournamentState extends GroupTournamentState implements Tourna
 					}
 				}
 				sign *= -1;
-				if(sign == 1) {
+				if (sign == 1) {
 					i++;
 				}
 			}
 			sortedTeams.remove(currentTeam);
 			unmatchedTeamsCounter++;
 		}
-		if(unplayedMatches.isEmpty()) {
-			while(teamsToMatch.size() != 0 && teamsToMatch.size() != 1) {
+		if (unplayedMatches.isEmpty()) {
+			while (teamsToMatch.size() != 0 && teamsToMatch.size() != 1) {
 				createMatch(teamsToMatch.get(0), teamsToMatch.get(1));
 				teamsToMatch.remove(0);
 				teamsToMatch.remove(0);
 			}
-			finished = true;
+			noMoreNewGames = true;
 		}
 	}
-	
+
 	private int getMatchUpCount(TeamItem tiA, TeamItem tiB) {
-		if(tiB.getTeam().getName().compareTo(tiA.getTeam().getName()) > 0) {
+		if (tiB.getTeam().getName().compareTo(tiA.getTeam().getName()) > 0) {
 			TeamItem temp = tiA;
 			tiA = tiB;
 			tiB = temp;
 		}
 		Map<TeamItem, Integer> counterForA = matchUpMatrix.get(tiA);
 		Integer count = counterForA.get(tiB);
-		if(count == null) {
+		if (count == null) {
 			counterForA.put(tiB, 0);
 			return 0;
 		}
@@ -135,7 +137,7 @@ public class SwissTournamentState extends GroupTournamentState implements Tourna
 	}
 
 	private void setMatchUpCount(TeamItem tiA, TeamItem tiB, int newCount) {
-		if(tiB.getTeam().getName().compareTo(tiA.getTeam().getName()) > 0) {
+		if (tiB.getTeam().getName().compareTo(tiA.getTeam().getName()) > 0) {
 			TeamItem temp = tiA;
 			tiA = tiB;
 			tiB = temp;
@@ -145,24 +147,25 @@ public class SwissTournamentState extends GroupTournamentState implements Tourna
 
 	private void createMatch(TeamItem teamA, TeamItem teamB) {
 		Match match;
-		if(teamA.getHomeMatchCount() <= teamB.getHomeMatchCount()) {
-			match = new GroupTournamentMatch(this, teamA, teamB);
+		if (teamA.getHomeMatchCount() <= teamB.getHomeMatchCount()) {
+			match = new Match(teamA.getTeam(), teamB.getTeam());
 		} else {
-			match = new GroupTournamentMatch(this, teamB, teamA);
+			match = new Match(teamB.getTeam(), teamA.getTeam());
 		}
+		match.addObserver(new GroupTournamentMatchResultObserver(this, teamB, teamA));
 		matches.add(match);
 		unplayedMatches.add(match);
 	}
-	
+
 	private List<TeamItem> getTeamsToMatch(List<TeamItem> sortedteams) {
 		int minPlays = tournament.getNumberOfRounds() - 1;
 		List<TeamItem> teamsToMatch = new LinkedList<TeamItem>();
 		for (TeamItem teamItem : sortedteams) {
-			if(teamItem.getMatchCount() < minPlays) {
+			if (teamItem.getMatchCount() < minPlays) {
 				teamsToMatch.clear();
 				minPlays = teamItem.getMatchCount();
 			}
-			if(teamItem.getMatchCount() == minPlays) {
+			if (teamItem.getMatchCount() == minPlays) {
 				teamsToMatch.add(teamItem);
 			}
 		}

@@ -56,18 +56,18 @@ abstract class GroupTournamentState implements TournamentState {
 	List<Match> matches = new ArrayList<Match>();
 	List<Match> unplayedMatches = new ArrayList<Match>();
 
-	@Override
-	public Tournament getTournament() {
-		return tournament;
+	GroupTournamentState(GroupTournament tournament) {
+		this.tournament = tournament;
+		for (Team team : tournament.getTeams()) {
+			TeamItem ti = new TeamItem();
+			ti.setTeam(team);
+			teamItems.add(ti);
+		}
 	}
 
 	@Override
-	public void reset() {
-		for (TeamItem ti : teamItems)
-			ti.reset();
-		matches.clear();
-		unplayedMatches.clear();
-		generateMatches();
+	public Tournament getTournament() {
+		return tournament;
 	}
 
 	@Override
@@ -95,11 +95,6 @@ abstract class GroupTournamentState implements TournamentState {
 	}
 
 	@Override
-	public boolean isFinished() {
-		return unplayedMatches.size() == 0;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("\tTEAM\trating\tW\tD\tL\tGS\tGA\tPts\n");
 		List<TeamItem> teams = getSortedTeamItems();
@@ -111,19 +106,10 @@ abstract class GroupTournamentState implements TournamentState {
 		}
 		sb.append("Matches:\n");
 		for (Match m : matches) {
-			sb.append(m.getHome().getName() + " " + m.getGoalsHome() + " : " + m.getVisit().getName() + " "
-					+ m.getGoalsVisit() + "\n");
+			sb.append(m.getHome().getName() + " " + m.getScoreHome() + " : " + m.getVisit().getName() + " "
+					+ m.getScoreVisit() + "\n");
 		}
 		return sb.toString();
-	}
-
-	void initialize(GroupTournament tournament) {
-		this.tournament = tournament;
-		for (Team team : tournament.getTeams()) {
-			TeamItem ti = new TeamItem();
-			ti.setTeam(team);
-			teamItems.add(ti);
-		}
 	}
 
 	List<TeamItem> getSortedTeamItems() {

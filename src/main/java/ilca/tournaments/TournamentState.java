@@ -42,8 +42,9 @@ import ilca.model.Team;
 
 /**
  * Interface for the representation of a tournament run.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public interface TournamentState {
 
@@ -56,6 +57,4 @@ public interface TournamentState {
 	Match getNextMatch();
 
 	List<Match> getKnownMatches();
-
-	void reset();
 }

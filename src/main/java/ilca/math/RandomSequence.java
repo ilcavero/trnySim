@@ -38,7 +38,8 @@ package ilca.math;
 import java.util.Random;
 
 /**
- * Abstract class for integer generators that use random numbers. 
+ * Abstract class for integer sequences that use java.util.Random.
+ * 
  * @author ilcavero
  * 
  */

@@ -35,8 +35,10 @@
  ******************************************************************************/
 package ilca.engine;
 
+import ilca.math.UniformRandomSequence;
 import ilca.model.Team;
 import ilca.tournaments.LeagueTournament;
+import ilca.tournaments.LeagueTournamentParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ import org.junit.Test;
 public class LeagueEngineTest {
 
 	@Test
-	public void simulate() {
+	public void testSimulate() {
 		Random r = new Random(999);
 		List<Team> teams = new ArrayList<Team>();
 		for (int i = 0; i < 20; i++) {
@@ -56,13 +58,22 @@ public class LeagueEngineTest {
 			teams.add(t);
 		}
 		LeagueTournament tournament = new LeagueTournament(teams, 38);
-		MatchEngine sim = new MatchEngine(10);
+		SimulationEngine sim = new SimulationEngine(10);
 		ResultTally tally = sim.simulateTournament(tournament, 100);
 		Assert.assertEquals(0.33, tally.getPercentageOfCorrectRank(), 0.1d);
 	}
-	
+
+	@Test
+	public void testMultiAnalysis() {
+		final int TOURNAMENT_SIZE = 10, NUMBER_OF_MATCHES = 18, ANALYSIS_REPETITIONS = 10, RUN_REPETITIONS = 10;
+		SimulationEngine sim = new SimulationEngine(37);
+		ResultTally tally = sim.simulateTournaments(new LeagueTournamentParameters(NUMBER_OF_MATCHES, TOURNAMENT_SIZE),
+				new UniformRandomSequence(1l, 1500, 2500), ANALYSIS_REPETITIONS, RUN_REPETITIONS);
+		Assert.assertEquals(0.4998, tally.getPercentageOfCorrectRank(), 0.1d);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
-	public void simulateBadParameters() {
+	public void teestSimulateWithBadParameters() {
 		Random r = new Random(999);
 		List<Team> teams = new ArrayList<Team>();
 		for (int i = 0; i < 20; i++) {
@@ -70,7 +81,7 @@ public class LeagueEngineTest {
 			teams.add(t);
 		}
 		LeagueTournament tournament = new LeagueTournament(teams, 38);
-		MatchEngine sim = new MatchEngine(10);
+		SimulationEngine sim = new SimulationEngine(10);
 		sim.simulateTournament(tournament, 0);
 	}
 

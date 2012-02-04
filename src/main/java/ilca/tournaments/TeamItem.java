@@ -39,14 +39,16 @@ import ilca.model.Match;
 import ilca.model.Team;
 
 /**
- * Represents the data associated with a team's standing in a league-like tournament.
+ * Represents the data associated with a team's standing in a league-like
+ * tournament.
+ * 
  * @author ilcavero
- *
+ * 
  */
 class TeamItem {
 
 	private Team team;
-	private int matchCount, homeMatchCount, wins, draws, loses, goalsScored, goalsConceded;
+	private int matchCount, homeMatchCount, wins, draws, loses, score, scoreConceded;
 
 	Team getTeam() {
 		return team;
@@ -69,58 +71,49 @@ class TeamItem {
 	}
 
 	int getGoalsScored() {
-		return goalsScored;
+		return score;
 	}
 
 	int getGoalsConceded() {
-		return goalsConceded;
+		return scoreConceded;
 	}
 
 	int getMatchCount() {
 		return matchCount;
 	}
-	
+
 	int getHomeMatchCount() {
 		return homeMatchCount;
 	}
-	
+
 	void setTeam(Team team) {
 		this.team = team;
 	}
 
 	void addResult(Match m) {
 		boolean homeTeam;
-		if(team.equals(m.getHome())) {
+		if (team.equals(m.getHome())) {
 			homeTeam = true;
 			homeMatchCount++;
-		}
-		else if(team.equals(m.getVisit()))
+		} else if (team.equals(m.getVisit()))
 			homeTeam = false;
 		else
 			throw new IllegalArgumentException("The match does not belong to the team in TeamItem");
-		goalsScored += homeTeam ? m.getGoalsHome() : m.getGoalsVisit();	
-		goalsConceded += homeTeam ? m.getGoalsVisit() : m.getGoalsHome();
-		if (m.getGoalsHome() == m.getGoalsVisit()) {
+		score += homeTeam ? m.getScoreHome() : m.getScoreVisit();
+		scoreConceded += homeTeam ? m.getScoreVisit() : m.getScoreHome();
+		if (m.getScoreHome() == m.getScoreVisit()) {
 			draws++;
-		} else if (m.getGoalsHome() > m.getGoalsVisit()) {
-			if(homeTeam)
+		} else if (m.getScoreHome() > m.getScoreVisit()) {
+			if (homeTeam)
 				wins++;
 			else
 				loses++;
 		} else {
-			if(homeTeam)
+			if (homeTeam)
 				loses++;
 			else
 				wins++;
 		}
 		matchCount++;
-	}
-
-	void reset() {
-		wins = 0;
-		draws = 0;
-		loses = 0;
-		goalsScored = 0;
-		goalsConceded = 0;
 	}
 }

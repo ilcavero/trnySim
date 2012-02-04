@@ -36,25 +36,26 @@
 package ilca.math;
 
 /**
- * Integers generator with the uniform distribution.
+ * Integers sequence with a uniform distribution.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public class UniformRandomSequence extends RandomSequence {
 	private int minValue;
-	private int maxValue;
+	private int randomValue;
 
 	public UniformRandomSequence(long seed, int minValue, int maxValue) {
 		super(seed);
 		if (minValue > maxValue)
 			throw new IllegalArgumentException("minValue must be less than maxValue");
 		this.minValue = minValue;
-		this.maxValue = maxValue + minValue;
+		this.randomValue = maxValue - minValue;
 	}
 
 	@Override
 	public int nextInt() {
-		return r.nextInt(maxValue) - minValue;
+		return r.nextInt(randomValue) + minValue;
 	}
 
 }

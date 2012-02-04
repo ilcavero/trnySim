@@ -40,7 +40,16 @@ import ilca.model.Team;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utilities methods for testing.
+ * 
+ * @author ilcavero
+ * 
+ */
 public class Utils {
+
+	private Utils() {
+	}
 
 	public static List<Team> createTeamList(int size) {
 		List<Team> teams = new ArrayList<Team>();
@@ -48,6 +57,14 @@ public class Utils {
 			teams.add(new Team("T" + i, 0));
 		}
 		return teams;
+	}
+
+	public static <T> List<T> buildList(List<T> source, int... positions) {
+		List<T> reorderedList = new ArrayList<T>();
+		for (int i = 0; i < positions.length; i++) {
+			reorderedList.add(source.get(positions[i]));
+		}
+		return reorderedList;
 	}
 
 }

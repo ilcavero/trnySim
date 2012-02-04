@@ -40,22 +40,27 @@ import ilca.math.NormalRandomSequence;
 import ilca.model.Team;
 
 /**
- * List of ratings that team will have during a tournament.
+ * Sequence of ratings that a team will have during a tournament.
+ * 
  * @author ilcavero
- *
+ * 
  */
 class TeamPerformance {
+	// TODO: this class has to be an abstract factory for sequences that you
+	// parameterize
+	// once, as it is is a bad wrapper for integer sequence, which is already a
+	// wrapper to begin with.
 	public static final int DEFAULT_PERFORMANCE_DEVIATION = 200;
 	private IntegerSequence performanceGenerator;
 
 	public TeamPerformance(IntegerSequence performanceGenerator) {
-		if(performanceGenerator == null)
+		if (performanceGenerator == null)
 			throw new IllegalArgumentException("performanceGenerator is null");
 		this.performanceGenerator = performanceGenerator;
 	}
 
 	public TeamPerformance(Team team, long seed) {
-		if(team == null)
+		if (team == null)
 			throw new IllegalArgumentException("team is null");
 		this.performanceGenerator = new NormalRandomSequence(seed, team.getRating(), DEFAULT_PERFORMANCE_DEVIATION);
 	}

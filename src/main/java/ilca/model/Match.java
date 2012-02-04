@@ -35,15 +35,20 @@
  ******************************************************************************/
 package ilca.model;
 
+import ilca.utils.Observable;
+
 /**
- * Simple representation of an association football match. Two-state immutable object
- * initially as a not-played match, and after result as a played match.
+ * Simple representation of a sports match where only two teams play each other
+ * and the goal is to have higher score than the opponent. This is a two-state
+ * object (not played->played) with the transition triggered by the setResult
+ * method; otherwise this is an immutable object.
+ * 
  * @author ilcavero
- *
+ * 
  */
-public class Match {
+public final class Match extends Observable<Match> {
 	private Team home, visit;
-	private int goalsHome, goalsVisit;
+	private int scoreHome, scoreVisit;
 	private int homeRating;
 	private int visitRating;
 	private boolean played = false;
@@ -61,12 +66,12 @@ public class Match {
 		return visitRating;
 	}
 
-	public int getGoalsHome() {
-		return goalsHome;
+	public int getScoreHome() {
+		return scoreHome;
 	}
 
-	public int getGoalsVisit() {
-		return goalsVisit;
+	public int getScoreVisit() {
+		return scoreVisit;
 	}
 
 	public Team getHome() {
@@ -78,43 +83,54 @@ public class Match {
 	}
 
 	public Team getWinner() {
-		if (goalsHome > goalsVisit)
+		if (scoreHome > scoreVisit)
 			return home;
-		else if (goalsVisit > goalsHome)
+		else if (scoreVisit > scoreHome)
 			return visit;
 		else
 			return null;
 	}
 
 	public boolean isDraw() {
-		if (goalsHome == goalsVisit)
+		if (scoreHome == scoreVisit)
 			return true;
 		else
 			return false;
 	}
 
 	public Team getLoser() {
-		if (goalsHome < goalsVisit)
+		if (scoreHome < scoreVisit)
 			return home;
-		else if (goalsVisit < goalsHome)
+		else if (scoreVisit < scoreHome)
 			return visit;
 		else
 			return null;
 	}
 
-	public void setResult(int goalsHome, int goalsVisit, int homeRating, int visitRating) {
+	public void setResult(int scoreHome, int scoreVisit) {
+		setResult(scoreHome, scoreVisit, 0, 0);
+	}
+
+	public void setResult(int scoreHome, int scoreVisit, int homeRating, int visitRating) {
 		if (isPlayed())
-			throw new IllegalStateException();
-		if(goalsHome < 0 || goalsVisit < 0)
-			throw new IllegalArgumentException("negative amount of goals");
-		this.goalsHome = goalsHome;
-		this.goalsVisit = goalsVisit;
+			throw new IllegalStateException("Result already set");
+		if (scoreHome < 0 || scoreVisit < 0)
+			throw new IllegalArgumentException("negative score");
+		this.scoreHome = scoreHome;
+		this.scoreVisit = scoreVisit;
 		this.homeRating = homeRating;
 		this.visitRating = visitRating;
 		this.played = true;
+		notifyObservers(this);
+		clearObservers();
 	}
 
 	public boolean isPlayed() {
 		return played;
+	}
+
+	@Override
+	public String toString() {
+		return home + "-vs-" + visit;
 	}
 }

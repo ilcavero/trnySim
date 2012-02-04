@@ -41,8 +41,9 @@ import ilca.model.Team;
 
 /**
  * Interface for tournament set-ups. Tournaments will be immutable objects.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public interface Tournament {
 
@@ -50,5 +51,11 @@ public interface Tournament {
 
 	List<Team> getTeams();
 
+	/**
+	 * Gets the max number of matches/series a team will play in this
+	 * tournament.
+	 * 
+	 * @return
+	 */
 	int getNumberOfRounds();
 }

@@ -35,22 +35,30 @@
  ******************************************************************************/
 package ilca.tournaments;
 
+import ilca.model.Match;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of league tournament state. Games will be generated
- * on construction.
+ * Implementation of league tournament state. Games will be generated on
+ * construction.
+ * 
  * @author ilcavero
- *
+ * 
  */
-public class LeagueTournamentState extends GroupTournamentState {
+final class LeagueTournamentState extends GroupTournamentState {
 
 	LeagueTournamentState(LeagueTournament tournament) {
-		initialize(tournament);
+		super(tournament);
 		generateMatches();
 	}
-	
+
+	@Override
+	public boolean isFinished() {
+		return unplayedMatches.size() == 0;
+	}
+
 	@Override
 	void generateMatches() {
 		if (!matches.isEmpty())
@@ -58,7 +66,7 @@ public class LeagueTournamentState extends GroupTournamentState {
 		int pivot = 0;
 		List<TeamItem> teams = new ArrayList<TeamItem>(teamItems);
 		int size = teams.size();
-		int numberOfMatchdays = this.getTournament().getNumberOfRounds() ;
+		int numberOfMatchdays = this.getTournament().getNumberOfRounds();
 		if (size % 2 != 0) {
 			numberOfMatchdays += numberOfMatchdays / (size - 1);
 			teams.add(null);
@@ -76,7 +84,8 @@ public class LeagueTournamentState extends GroupTournamentState {
 					home = visit;
 					visit = temp;
 				}
-				GroupTournamentMatch match = new GroupTournamentMatch(this, home, visit);
+				Match match = new Match(home.getTeam(), visit.getTeam());
+				match.addObserver(new GroupTournamentMatchResultObserver(this, home, visit));
 				matches.add(match);
 				unplayedMatches.add(match);
 			}

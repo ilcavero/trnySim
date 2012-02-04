@@ -44,13 +44,26 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Class to analyze the result of tournaments.
+ * Class that accumulates the analysis of tournament simulations results.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public class ResultTally {
 
-	private List<ResultTally.ResultDataPoint> tally = new ArrayList<ResultTally.ResultDataPoint>();
+	private long sumSquareDiff, sumDiff;
+	private long dataSize, correctPositionCount;
+	private PositionTalliesHolder positionTalliesHolder;
+	private boolean keepPositionTallies;
+
+	public ResultTally() {
+		this(true);
+	}
+
+	public ResultTally(boolean keepPositionTallies) {
+		this.keepPositionTallies = keepPositionTallies;
+		positionTalliesHolder = new PositionTalliesHolder();
+	}
 
 	public void addTournamentResult(TournamentState resultTournament) {
 		if (resultTournament == null || resultTournament.isFinished() == false)
@@ -72,91 +85,91 @@ public class ResultTally {
 			}
 		});
 		for (int i = 0; i < sortedCopy.size(); i++) {
-			ResultDataPoint p = new ResultDataPoint();
-			p.actual = result.indexOf(sortedCopy.get(i));
-			p.deserved = i;
-			tally.add(p);
+			int actual = result.indexOf(sortedCopy.get(i));
+			int deserved = i;
+			addDataPoint(actual, deserved);
 		}
 	}
-	
+
 	public void addTally(ResultTally otherTally) {
-		tally.addAll(otherTally.tally);
+		sumSquareDiff += otherTally.sumSquareDiff;
+		sumDiff += otherTally.sumDiff;
+		dataSize += otherTally.dataSize;
+		correctPositionCount += otherTally.correctPositionCount;
+		if (keepPositionTallies == true) {
+			for (int i = 0; i < otherTally.positionTalliesHolder.size(); i++) {
+				positionTalliesHolder.getPositionTally(i)
+						.addTally(otherTally.positionTalliesHolder.getPositionTally(i));
+			}
+		}
+	}
+
+	public void addDataPoint(int actualPosition, int deservedPosition) {
+		sumSquareDiff += Math.pow(actualPosition - deservedPosition, 2);
+		sumDiff += Math.abs(actualPosition - deservedPosition);
+		dataSize++;
+		if (actualPosition == deservedPosition) {
+			correctPositionCount++;
+		}
+		if (keepPositionTallies == true) {
+			positionTalliesHolder.getPositionTally(deservedPosition).addDataPoint(actualPosition, deservedPosition);
+		}
 	}
 
 	public double getRankDifferenceStandardDeviation() {
-		if (tally.size() < 3)
+		if (dataSize < 3)
 			return Double.NaN;
 		double mean = getRankDifferenceMean();
-		double sum = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			sum += Math.pow((Math.abs(dataPoint.actual - dataPoint.deserved) - mean), 2);
-		}
-		long N = tally.size() - 1;
+		// sum = sum(0,size, abs(actual-deserved) - mean)²) = sum(abs(act-des)²
+		// - 2*abs(act-des)*mean + mean²)
+		// = sum(abs(act-des)²) - sum(2*abs(act-des)*mean) + sum(mean²)
+		// = sum(abs(act-des)²) - 2*mean*sum(abs(act-des)) + size*mean²
+		double sum = sumSquareDiff - 2 * mean * sumDiff + Math.pow(mean, 2) * dataSize;
+		long N = dataSize - 1;
 		return Math.sqrt(sum / (double) N);
 	}
 
 	public double getRankDifferenceMean() {
-		long sum = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			sum += Math.abs(dataPoint.actual - dataPoint.deserved);
-		}
-		return (sum / (double) tally.size());
+		return (sumDiff / (double) dataSize);
 	}
 
 	public double getRankDifferenceStandardDeviationForPosition(int deservedPosition) {
-		if(deservedPosition < 1)
+		if (deservedPosition < 1)
 			throw new IllegalArgumentException("deserved positions should be positive integers");
-		double mean = getRankDifferenceMeanForPosition(deservedPosition);
-		double sum = 0;
-		long count = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			if (dataPoint.deserved == deservedPosition) {
-				sum += Math.pow((Math.abs(dataPoint.actual - dataPoint.deserved) - mean), 2);
-				count++;
-			}
-		}
-		if (count < 3)
-			return Double.NaN;
-		return Math.sqrt(sum / (double) (count - 1));
+		return positionTalliesHolder.getPositionTally(deservedPosition).getRankDifferenceStandardDeviation();
 	}
 
 	public double getRankDifferenceMeanForPosition(int deservedPosition) {
-		if(deservedPosition < 1)
+		if (deservedPosition < 1)
 			throw new IllegalArgumentException("deserved positions should be positive integers");
-		long sum = 0, count = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			if (dataPoint.deserved == deservedPosition) {
-				sum += Math.abs(dataPoint.actual - dataPoint.deserved);
-				count++;
-			}
-		}
-		return (sum / (double) count);
+		return positionTalliesHolder.getPositionTally(deservedPosition).getRankDifferenceMean();
 	}
 
 	public double getPercentageOfCorrectRank() {
-		long count = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			if (dataPoint.actual == dataPoint.deserved)
-				count++;
-		}
-		return count / (double) tally.size();
+		return (correctPositionCount / (double) dataSize);
 	}
 
 	public double getPercentageOfCorrectRankForPosition(int deservedPosition) {
-		if(deservedPosition < 0)
+		if (deservedPosition < 0)
 			throw new IllegalArgumentException("deserved positions should be positive integers or zero");
-		long count = 0, total = 0;
-		for (ResultDataPoint dataPoint : tally) {
-			if (deservedPosition == dataPoint.actual && deservedPosition == dataPoint.deserved)
-				count++;
-			if (deservedPosition == dataPoint.deserved)
-				total++;
-		}
-		return count / (double) total;
+		return positionTalliesHolder.getPositionTally(deservedPosition).getPercentageOfCorrectRank();
 	}
-	
-	private static class ResultDataPoint {
-		int deserved;
-		int actual;
+
+	private class PositionTalliesHolder {
+		private List<ResultTally> positionSpecificTallies = new ArrayList<ResultTally>();
+
+		public ResultTally getPositionTally(int position) {
+			if (ResultTally.this.keepPositionTallies == false) {
+				throw new IllegalStateException("No specific position tallies are being kept");
+			}
+			while (positionSpecificTallies.size() <= position) {
+				positionSpecificTallies.add(new ResultTally(false));
+			}
+			return positionSpecificTallies.get(position);
+		}
+
+		public int size() {
+			return positionSpecificTallies.size();
+		}
 	}
 }

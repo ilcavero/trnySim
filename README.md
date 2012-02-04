@@ -7,18 +7,39 @@ formats through simulation. Although still in development, trnySim is able to
 analyze the fairness of the results of a tournament in terms of the position 
 achieved by a team against the expected position according to a team's rating. 
 It is intended that once finished, this program will allow users to analyze 
-their ideas for tournament designs. Currently football (soccer) type league and
-swiss style tournament simulators are implemented; the next steps will be 
-knock-out and composite tournaments (multi-phase tournaments, i.e. top 4 
-classify to a play-off). Although not its main purpose, this program can be 
-used as a library to create a generator of tournament schedules.
+their ideas for tournament designs.
+
+The following formats are currently implemented:
+
+* Leagues: all against all in sequence for a predefined amount of rounds.
+* Swiss style: all against all in sequence for a predefined amount of rounds 
+following swiss style tournament scheduling.
+* Knock-out: bracket style match-up, supports multiple games per match-up (series)
+ and multiple elimination.
+* Full ranking knock-out: bracket style match-ups in single elimination  where 
+losing teams keep playing to define their position among other losing teams.
+
+Future development is planned for:
+
+* Multi-phase tournaments: i.e. a league tournament where top 4 classify to a play-off
+* Parallel tournaments: i.e. 16 groups playing a league and winners classify to
+ a play-off.
+* Custom pairing systems for knock-out tournaments: i.e. 1-8 vs 4-6; 2-7 vs 3-5 
+instead of 1-8 vs 4-5; 3-6 vs 2-7.
+* UI project to create and test tournament formats without programming. 
+ 
+Although not its main purpose, this program can be used as a library to create 
+tournament schedules
 
 Installation & Usage
 --------------------
-No installation is required as this program is intended to be a library. 
-Users are required to have a working Java programming environment (JDK) and 
-enough programming skills to build a script to simulate their tournament designs, 
-in a way similar as it is demonstrated in the trnySim.java file.
+Building the source requires a working Java programming environment (JDK 5+), 
+maven (http://maven.apache.org) and enough programming skills to create a simple 
+program similar to what is demonstrated in the trnySim.java file.
+Using maven the demo simulation can be easily run with the "mvn exec:java" command; 
+in the future a simple UI will allow users to set up their tournament formats 
+and simulate them, but meanwhile it is necessary to modify the TrnySim.java to 
+create different scenarios.
 
 Author & License
 ----------------

@@ -41,11 +41,10 @@ import ilca.model.Team;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class TeamItemTest {
-	
+
 	@Test
-	public void countMatchResults() {
+	public void testCountMatchResults() {
 		Team t0 = new Team("T0", 1000);
 		Team t1 = new Team("T1", 1500);
 		TeamItem ti = new TeamItem();

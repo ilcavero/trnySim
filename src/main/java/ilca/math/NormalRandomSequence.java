@@ -37,8 +37,9 @@ package ilca.math;
 
 /**
  * Generator of integers with a normal distribution.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public class NormalRandomSequence extends RandomSequence {
 

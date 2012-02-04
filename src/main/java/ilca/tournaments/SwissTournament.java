@@ -41,8 +41,9 @@ import java.util.List;
 
 /**
  * Implementation of swiss tournament.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public final class SwissTournament extends GroupTournament {
 

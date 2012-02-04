@@ -41,8 +41,9 @@ import java.util.List;
 
 /**
  * Implementation of regular all-against-all league tournament.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public final class LeagueTournament extends GroupTournament {
 

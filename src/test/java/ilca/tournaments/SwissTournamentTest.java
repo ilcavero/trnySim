@@ -50,82 +50,97 @@ import org.junit.Test;
 public class SwissTournamentTest {
 
 	@Test
-	public void evenTournamentGeneratedMatchesCount() {
+	public void testEvenTournamentGeneratedMatchesCount() {
 		SwissTournament swissTournament = new SwissTournament(Utils.createTeamList(8), 5);
 		TournamentState instance = swissTournament.startTournamentInstance();
 		int i = 0;
-		Match m =  instance.getNextMatch();
+		Match m = instance.getNextMatch();
 		while (m != null) {
 			m.setResult(1, 0, 0, 0);
 			i++;
 			m = instance.getNextMatch();
 		}
-		assertEquals(20,  i);
+		assertEquals(20, i);
 	}
 
 	@Test
-	public void oddTournamentGeneratedMatchesCount() {
+	public void testOddTournamentGeneratedMatchesCount() {
 		SwissTournament swissTournament = new SwissTournament(Utils.createTeamList(9), 5);
 		TournamentState instance = swissTournament.startTournamentInstance();
 		int i = 0;
-		Match m =  instance.getNextMatch();
+		Match m = instance.getNextMatch();
 		while (m != null) {
 			m.setResult(1, 0, 0, 0);
 			i++;
 			m = instance.getNextMatch();
 		}
-		assertEquals(22,  i);
+		assertEquals(22, i);
 	}
-	
+
 	@Test
-	public void longTournamentGeneratedMatchesCount() {
+	public void testLongTournamentGeneratedMatchesCount() {
 		SwissTournament swissTournament = new SwissTournament(Utils.createTeamList(8), 10);
 		TournamentState instance = swissTournament.startTournamentInstance();
 		int i = 0;
-		Match m =  instance.getNextMatch();
+		Match m = instance.getNextMatch();
 		while (m != null) {
 			m.setResult(1, 0, 0, 0);
 			i++;
 			m = instance.getNextMatch();
 		}
-		assertEquals(40,  i);
+		assertEquals(40, i);
 	}
-	
+
 	@Test
-	public void followsSwissRules() {
+	public void testFollowsSwissRules() {
 		List<Team> teams = Utils.createTeamList(8);
-		int[] teamKeys = {0,1,2,3,4,5,6,7,6,4,2,0,1,3,5,7,6,2,1,5,4,0,3,7,1,6,4,2,3,5,7,0,1,4,3,6,7,2,5,0,7,1,3,4,5,6,0,2};
+		int[] teamKeys = { 0, 1, 2, 3, 4, 5, 6, 7, 6, 4, 2, 0, 1, 3, 5, 7, 6, 2, 1, 5, 4, 0, 3, 7, 1, 6, 4, 2, 3, 5, 7,
+				0, 1, 4, 3, 6, 7, 2, 5, 0, 7, 1, 3, 4, 5, 6, 0, 2 };
 		SwissTournament swissTournament = new SwissTournament(teams, 6);
 		TournamentState instance = swissTournament.startTournamentInstance();
 		int i = 0;
-		Match m =  instance.getNextMatch();
+		Match m = instance.getNextMatch();
 		while (m != null) {
-			assertEquals("Expected: " + teams.get(teamKeys[2*i]).getName() + " Got: " + m.getHome().getName(), 
-					teams.get(teamKeys[2*i]), m.getHome());
-			assertEquals("Expected: " + teams.get(teamKeys[2*i+1]).getName() + " Got: " + m.getVisit().getName(), 
-					teams.get(teamKeys[2*i+1]), m.getVisit());
+			assertEquals(teams.get(teamKeys[2 * i]), m.getHome());
+			assertEquals(teams.get(teamKeys[2 * i + 1]), m.getVisit());
 			m.setResult(1 + i, 0, 0, 0);
 			i++;
 			m = instance.getNextMatch();
 		}
 	}
-	
+
 	@Test
-	public void followsSwissRulesOddTournamentWithTwoRounds() {
+	public void testFollowsSwissRulesOddTournamentWithTwoRounds() {
 		List<Team> teams = Utils.createTeamList(5);
-		int[] teamKeys = {0,1,2,3,4,1,4,2,3,0,3,4,2,0,1,2,1,3,0,4,1,3,0,2,4,3,1,0,2,4,2,1,0,4};
+		int[] teamKeys = { 0, 1, 2, 3, 4, 1, 4, 2, 3, 0, 3, 4, 2, 0, 1, 2, 1, 3, 0, 4, 1, 3, 0, 2, 4, 3, 1, 0, 2, 4, 2,
+				1, 0, 4 };
 		SwissTournament swissTournament = new SwissTournament(teams, 7);
 		TournamentState instance = swissTournament.startTournamentInstance();
 		int i = 0;
-		Match m =  instance.getNextMatch();
+		Match m = instance.getNextMatch();
 		while (m != null) {
-			assertEquals("Expected: " + teams.get(teamKeys[2*i]).getName() + " Got: " + m.getHome().getName(), 
-					teams.get(teamKeys[2*i]), m.getHome());
-			assertEquals("Expected: " + teams.get(teamKeys[2*i+1]).getName() + " Got: " + m.getVisit().getName(), 
-					teams.get(teamKeys[2*i+1]), m.getVisit());
+			assertEquals(teams.get(teamKeys[2 * i]), m.getHome());
+			assertEquals(teams.get(teamKeys[2 * i + 1]), m.getVisit());
 			m.setResult(1 + i, 0, 0, 0);
 			i++;
 			m = instance.getNextMatch();
 		}
+	}
+
+	@Test
+	public void testIsFinished() throws Exception {
+		SwissTournament swissTournament = new SwissTournament(Utils.createTeamList(4), 2);
+		TournamentState instance = swissTournament.startTournamentInstance();
+		assertFalse(instance.isFinished());
+		instance.getNextMatch().setResult(1, 0, 0, 0);
+		assertFalse(instance.isFinished());
+		instance.getNextMatch().setResult(1, 0, 0, 0);
+		assertFalse(instance.isFinished());
+		instance.getNextMatch().setResult(1, 0, 0, 0);
+		assertFalse(instance.isFinished());
+		instance.getNextMatch().setResult(1, 0, 0, 0);
+		assertTrue(instance.isFinished());
+		assertNull(instance.getNextMatch());
+
 	}
 }

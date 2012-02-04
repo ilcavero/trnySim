@@ -40,7 +40,7 @@ import org.junit.Test;
 
 public class RandomSequenceTest {
 	@Test
-	public void sequenceRepetition() throws Exception {
+	public void testSequenceRepetition() throws Exception {
 		sequenceTester(new UniformRandomSequence(0, 0, 100));
 		sequenceTester(new NormalRandomSequence(0, 50, 20));
 	}
@@ -61,7 +61,7 @@ public class RandomSequenceTest {
 	}
 
 	@Test
-	public void normalDistribution() {
+	public void testNormalDistribution() {
 		// Not mathematically rigorous. ;-)
 		int stdDeviation = 5;
 		int mean = 50;
@@ -87,14 +87,16 @@ public class RandomSequenceTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void uniformDistributionArgumentsTest() {
+	public void testUniformDistributionArgumentsTest() {
 		new UniformRandomSequence(0, 100, -100);
 	}
 
 	@Test
-	public void uniformDistribution() {
+	public void testUniformDistribution() {
 		int pop = 10000;
-		UniformRandomSequence r = new UniformRandomSequence(1, 0, 100);
+		int minValue = 100;
+		int maxValue = 200;
+		UniformRandomSequence r = new UniformRandomSequence(1, minValue, maxValue);
 		r.reset();
 		int result[] = new int[pop];
 		for (int i = 0; i < pop; i++) {
@@ -102,13 +104,14 @@ public class RandomSequenceTest {
 		}
 		int c1 = 0, c2 = 0, c3 = 0;
 		for (int i = 0; i < pop; i++) {
-			if (result[i] < 0 || result[i] >= 100)
+			if (result[i] < minValue || result[i] >= maxValue)
 				fail();
-			if (result[i] >= 0 && result[i] < 33)
+			if (result[i] >= minValue && result[i] < minValue + (maxValue - minValue) / 3)
 				c1++;
-			if (result[i] >= 33 && result[i] < 66)
+			if (result[i] >= minValue + (maxValue - minValue) / 3
+					&& result[i] < minValue + 2 * (maxValue - minValue) / 3)
 				c2++;
-			if (result[i] >= 66 && result[i] < 100)
+			if (result[i] >= minValue + 2 * (maxValue - minValue) / 3 && result[i] < maxValue)
 				c3++;
 		}
 		assertTrue(c1 - c2 < pop * 0.1);
@@ -117,5 +120,6 @@ public class RandomSequenceTest {
 		assertTrue(c2 - c3 < pop * 0.1);
 		assertTrue(c1 - c3 < pop * 0.1);
 		assertTrue(c3 - c1 < pop * 0.1);
+		assertEquals(c1 + c2 + c3, pop);
 	}
 }

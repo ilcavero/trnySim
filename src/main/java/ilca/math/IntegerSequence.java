@@ -36,9 +36,10 @@
 package ilca.math;
 
 /**
- * Interface for integers generators.
+ * Interface for random integer generators.
+ * 
  * @author ilcavero
- *
+ * 
  */
 public interface IntegerSequence {
 	void reset();
